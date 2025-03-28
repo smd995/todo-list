@@ -1,3 +1,4 @@
+@import url(https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/nanumsquare.css);
 @import "tailwindcss";
 
 :root {
@@ -6,5 +7,18 @@
 }
 
 body {
-  height: 100vh;
+  font-family: "NanumSquare", sans-serif;
+  min-height: 100vh;
+}
+
+@font-face {
+  font-family: "HS-Regular";
+  src: url("https://gcore.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/HS-Regular.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.hs-font {
+  font-family: "HS-Regular", sans-serif;
 }
