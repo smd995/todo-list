@@ -8,7 +8,7 @@ interface Props {
 export const Header = (props: Props) => {
   return (
     <div className={clsx(props.className)}>
-      <div className="flex items-center">
+      <div className="flex items-center px-8 py-4">
         <Image
           src="/logo/Size=Large.svg"
           alt="Home"

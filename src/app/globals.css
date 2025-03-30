@@ -8,6 +8,7 @@
 
 body {
   font-family: "NanumSquare", sans-serif;
+  background-color: oklch(0.985 0.002 247.839);
   min-height: 100vh;
 }
 
