@@ -6,7 +6,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="max-w-7xl mx-auto">
+    <html lang="en">
       <body>{children}</body>
     </html>
   );

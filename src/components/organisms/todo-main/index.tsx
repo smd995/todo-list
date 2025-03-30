@@ -40,7 +40,12 @@ export const TodoMain = (props: Props) => {
   const dones = list.filter((todo) => todo.isCompleted);
 
   return (
-    <div className={clsx("px-8 py-4 min-h-screen", props.className)}>
+    <div
+      className={clsx(
+        "max-w-7xl mx-auto px-8 py-4 min-h-screen",
+        props.className
+      )}
+    >
       <div className="flex gap-2">
         <input
           type="text"
