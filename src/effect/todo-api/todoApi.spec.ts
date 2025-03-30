@@ -21,4 +21,10 @@ describe("GET /api/todo", () => {
 
     console.log(data);
   });
+
+  test("isCompleted", async () => {
+    const data = await api.isCompleted(5731, true);
+
+    console.log(data);
+  });
 });

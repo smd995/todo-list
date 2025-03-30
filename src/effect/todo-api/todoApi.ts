@@ -19,9 +19,11 @@ export const todoApi = () => {
   };
 
   // getAll
-  const findAll = async () => {
+  const findAll = async (page: number = 1, pageSize: number = 20) => {
     try {
-      const response = await fetch(baseUrl + `/${apiKey}/items`);
+      const response = await fetch(
+        baseUrl + `/${apiKey}/items?page=${page}&pageSize=${pageSize}`
+      );
       return await handleResponse(response);
     } catch (error) {
       console.error("findAll error", error);
@@ -57,5 +59,22 @@ export const todoApi = () => {
     }
   };
 
-  return { findAll, findOne, registerOne };
+  // isCompleted
+  const isCompleted = async (itemId: number, isCompleted: boolean) => {
+    try {
+      const res = await fetch(`${baseUrl}/${apiKey}/items/${itemId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isCompleted }),
+      });
+      return await handleResponse(res);
+    } catch (error) {
+      console.error("❌ isCompleted error:", error);
+      throw error;
+    }
+  };
+
+  return { findAll, findOne, registerOne, isCompleted };
 };
