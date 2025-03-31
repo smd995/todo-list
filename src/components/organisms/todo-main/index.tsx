@@ -1,16 +1,16 @@
 "use client";
-import { todoApi } from "@/effect/todo-api/todoApi";
+import { api } from "@/effect/todo-api/todoApi";
 import { TodoList } from "@/types/todo-list/type";
 import clsx from "clsx";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
 interface Props {
   className?: string;
 }
 
 export const TodoMain = (props: Props) => {
-  const api = todoApi();
   const [name, setName] = useState("");
   const [list, setList] = useState<TodoList[]>([]);
   const isActive = name.trim() !== "";
@@ -27,14 +27,14 @@ export const TodoMain = (props: Props) => {
     await fetchTodos();
   };
 
-  const fetchTodos = async () => {
+  const fetchTodos = useCallback(async () => {
     const updated = await api.findAll();
     setList(updated);
-  };
+  }, []);
 
   useEffect(() => {
     fetchTodos();
-  }, []);
+  }, [fetchTodos]);
 
   const todos = list.filter((todo) => !todo.isCompleted);
   const dones = list.filter((todo) => todo.isCompleted);
@@ -95,7 +95,11 @@ export const TodoMain = (props: Props) => {
                     onClick={() => onToggleCompletedClick(todo.id, false)}
                     className="w-8 h-8 rounded-full border-2 border-slate-900 bg-yellow-50 cursor-pointer"
                   ></button>
-                  <span className="text-base text-slate-800">{todo.name}</span>
+                  <Link href={`/items/${todo.id}`}>
+                    <span className="text-base text-slate-800 hover:underline">
+                      {todo.name}
+                    </span>
+                  </Link>
                 </li>
               ))
             ) : (
@@ -105,10 +109,11 @@ export const TodoMain = (props: Props) => {
                   alt="todo-list-empty-large"
                   width={240}
                   height={240}
+                  priority
                   className="hidden sm:block h-auto"
                 />
                 <Image
-                  src="/icon/empty/Type=Todo_Size=Small.svg"
+                  src="/icon/empty/Type=todo_Size=Small.svg"
                   alt="todo-list-empty-small"
                   width={120}
                   height={120}
@@ -144,9 +149,11 @@ export const TodoMain = (props: Props) => {
                       height={24}
                     />
                   </button>
-                  <span className="text-base text-slate-800 line-through">
-                    {todo.name}
-                  </span>
+                  <Link href={`/items/${todo.id}`}>
+                    <span className="text-base text-slate-800 line-through hover:underline">
+                      {todo.name}
+                    </span>
+                  </Link>
                 </li>
               ))
             ) : (

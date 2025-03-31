@@ -1,3 +1,5 @@
+import { TodoRequest } from "@/types/todo-list/type";
+
 export const todoApi = () => {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const apiKey = process.env.NEXT_PUBLIC_TENANT_ID;
@@ -76,5 +78,65 @@ export const todoApi = () => {
     }
   };
 
-  return { findAll, findOne, registerOne, isCompleted };
+  // updateOne
+  const updateOne = async (itemId: number, todo: TodoRequest) => {
+    try {
+      const res = await fetch(`${baseUrl}/${apiKey}/items/${itemId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(todo),
+      });
+      return await handleResponse(res);
+    } catch (error) {
+      console.error("❌ updateOne error:", error);
+      throw error;
+    }
+  };
+
+  // deleteOne
+  const deleteOne = async (itemId: number) => {
+    try {
+      const res = await fetch(`${baseUrl}/${apiKey}/items/${itemId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return await handleResponse(res);
+    } catch (error) {
+      console.error("❌ deleteOne error:", error);
+      throw error;
+    }
+  };
+
+  const uploadImage = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const res = await fetch(`${baseUrl}/${apiKey}/images/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      return await handleResponse(res);
+    } catch (error) {
+      console.error("❌ uploadImage error:", error);
+      throw error;
+    }
+  };
+
+  return {
+    findAll,
+    findOne,
+    registerOne,
+    isCompleted,
+    updateOne,
+    deleteOne,
+    uploadImage,
+  };
 };
+
+export const api = todoApi();
