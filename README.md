@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Todo List
 
-## Getting Started
+기존의 Todo-List를 업그레이드하여 디자인적으로 강화된 Todo 관리를 제공합니다.
 
-First, run the development server:
+---
+
+## 목차
+
+1. [소개]
+2. [기능]
+3. [설치]
+4. [사용법]
+5. [라이선스]
+
+---
+
+## 소개
+
+> 이 프로젝트는 Next.js, TailwindCSS를 사용하여 구축된 작업 관리 도구입니다. 개인이 프로젝트를 효율적으로 조직하고 우선순위를 설정할 수 있도록 돕습니다.
+
+---
+
+## 기능
+
+- Todo의 생성, 읽기, 수정, 삭제 (CRUD)
+- 모바일 및 데스크탑에서 반응형 UI 제공
+
+---
+
+## 설치
+
+### 1. 리포지토리 클론
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/smd995/todo-list.git
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. 의존성 설치
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cd todo-list
+npm install
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
 
-## Learn More
+### 3. 환경 변수 설정
 
-To learn more about Next.js, take a look at the following resources:
+`.env.local` 파일을 생성하고 필요한 변수를 추가합니다:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+API_URL=https://assignment-todolist-api.vercel.app/api
+TENANT_ID=your tenent id
 
-## Deploy on Vercel
+NEXT_PUBLIC_API_URL=https://assignment-todolist-api.vercel.app/api
+NEXT_PUBLIC_TENANT_ID=your tenent id
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 4. 개발 서버 실행
+
+```bash
+
+npm run dev
+
+```
+
+### 5. 애플리케이션 실행
+
+브라우저에서 애플리케이션을 확인하려면:
+
+```bash
+
+http://localhost:3000
+
+```
+
+---
+
+## 사용법
+
+1. "/"에서 할 일을 추가합니다.
+2. "/"에서 진행 상태를 변경할 수 있습니다.
+3. 할 일 목록을 눌러 상세페이지로 이동할 수 있습니다.
+4. 상세페이지에서 완료 여부, 제목, 이미지 추가, 메모를 수정할 수 있습니다.
+5. 상세페이지에서 할일을 삭제할 수 있습니다다.
+
+---
+
+---
+
+## 라이선스
+
+MIT

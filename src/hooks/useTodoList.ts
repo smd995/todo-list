@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { api } from "@/effect/todo-api/todoApi";
+import { api } from "@/effects/todo-api/todoApi";
 import { TodoList } from "@/types/todo-list/type";
 
 export const useTodoList = () => {

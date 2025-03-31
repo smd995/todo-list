@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "@/effect/todo-api/todoApi";
+import { api } from "@/effects/todo-api/todoApi";
 import { Todo, TodoRequest } from "@/types/todo-list/type";
 
 export const useTodoDetail = (id: number) => {
