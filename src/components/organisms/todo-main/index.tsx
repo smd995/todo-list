@@ -1,43 +1,28 @@
 "use client";
-import { api } from "@/effect/todo-api/todoApi";
-import { TodoList } from "@/types/todo-list/type";
+import { EmptyState } from "@/components/molecules/empty-state";
+import { TodoItem } from "@/components/molecules/todo-item";
+import { useTodoList } from "@/hooks/useTodoList";
 import clsx from "clsx";
 import Image from "next/image";
-import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
 
 interface Props {
   className?: string;
 }
 
 export const TodoMain = (props: Props) => {
-  const [name, setName] = useState("");
-  const [list, setList] = useState<TodoList[]>([]);
-  const isActive = name.trim() !== "";
+  const {
+    name,
+    setName,
+    isActive,
+    todos,
+    dones,
+    onRegisterClick,
+    onToggleCompletedClick,
+  } = useTodoList();
 
-  const onRegisterClick = async () => {
-    if (!name.trim()) return;
-    await api.registerOne(name);
-    setName("");
-    await fetchTodos();
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
   };
-
-  const onToggleCompletedClick = async (id: number, currentStatus: boolean) => {
-    await api.isCompleted(id, !currentStatus);
-    await fetchTodos();
-  };
-
-  const fetchTodos = useCallback(async () => {
-    const updated = await api.findAll();
-    setList(updated);
-  }, []);
-
-  useEffect(() => {
-    fetchTodos();
-  }, [fetchTodos]);
-
-  const todos = list.filter((todo) => !todo.isCompleted);
-  const dones = list.filter((todo) => todo.isCompleted);
 
   return (
     <div
@@ -50,7 +35,7 @@ export const TodoMain = (props: Props) => {
         <input
           type="text"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={handleChange}
           placeholder="할 일을 입력하세요"
           className="flex-1 h-14 px-4 border-2 rounded-full border-slate-900 bg-slate-100 outline-none shadow-[3px_3px_0_0_#0f172a] text-base"
         />
@@ -87,43 +72,18 @@ export const TodoMain = (props: Props) => {
           <ul className="space-y-3 mt-4">
             {todos.length > 0 ? (
               todos.map((todo) => (
-                <li
+                <TodoItem
                   key={todo.id}
-                  className="flex items-center space-x-4 px-4 py-2 border-2 rounded-full"
-                >
-                  <button
-                    onClick={() => onToggleCompletedClick(todo.id, false)}
-                    className="w-8 h-8 rounded-full border-2 border-slate-900 bg-yellow-50 cursor-pointer"
-                  ></button>
-                  <Link href={`/items/${todo.id}`}>
-                    <span className="text-base text-slate-800 hover:underline">
-                      {todo.name}
-                    </span>
-                  </Link>
-                </li>
+                  todo={todo}
+                  isDone={false}
+                  onToggle={onToggleCompletedClick}
+                />
               ))
             ) : (
-              <div className="flex flex-col items-center justify-center mt-6">
-                <Image
-                  src="/icon/empty/Type=Todo_Size=Large.svg"
-                  alt="todo-list-empty-large"
-                  width={240}
-                  height={240}
-                  priority
-                  className="hidden sm:block h-auto"
-                />
-                <Image
-                  src="/icon/empty/Type=todo_Size=Small.svg"
-                  alt="todo-list-empty-small"
-                  width={120}
-                  height={120}
-                  className="block sm:hidden h-auto"
-                />
-                <p className="font-bold text-slate-400 mt-2">할 일이 없어요.</p>
-                <p className="font-bold text-slate-400">
-                  TODO를 새롭게 추가해주세요!
-                </p>
-              </div>
+              <EmptyState
+                type="todo"
+                messages={["할 일이 없어요.", "TODO를 새롭게 추가해주세요!"]}
+              />
             )}
           </ul>
         </div>
@@ -134,51 +94,21 @@ export const TodoMain = (props: Props) => {
           <ul className="space-y-3 mt-4">
             {dones.length > 0 ? (
               dones.map((todo) => (
-                <li
+                <TodoItem
                   key={todo.id}
-                  className="flex items-center space-x-4 px-4 py-2 border-2 rounded-full bg-violet-100"
-                >
-                  <button
-                    onClick={() => onToggleCompletedClick(todo.id, true)}
-                    className="w-8 h-8 rounded-full bg-violet-600 flex items-center justify-center cursor-pointer"
-                  >
-                    <Image
-                      src={"/icon//check/check-bold.svg"}
-                      alt="check"
-                      width={24}
-                      height={24}
-                    />
-                  </button>
-                  <Link href={`/items/${todo.id}`}>
-                    <span className="text-base text-slate-800 line-through hover:underline">
-                      {todo.name}
-                    </span>
-                  </Link>
-                </li>
+                  todo={todo}
+                  isDone={true}
+                  onToggle={onToggleCompletedClick}
+                />
               ))
             ) : (
-              <div className="flex flex-col items-center justify-center mt-6">
-                <Image
-                  src="/icon/empty/Type=Done_Size=Large.svg"
-                  alt="done-list-empty-large"
-                  width={240}
-                  height={240}
-                  className="hidden sm:block mx-auto mt-6 h-auto"
-                />
-                <Image
-                  src="/icon/empty/Type=Done_Size=Small.svg"
-                  alt="done-list-empty-small"
-                  width={120}
-                  height={120}
-                  className="block sm:hidden mx-auto mt-6 h-auto"
-                />
-                <p className="font-bold text-slate-400">
-                  아직 다 한 일이 없어요.
-                </p>
-                <p className="font-bold text-slate-400">
-                  해야 할 일을 체크해보세요!
-                </p>
-              </div>
+              <EmptyState
+                type="done"
+                messages={[
+                  "아직 다 한 일이 없어요.",
+                  "해야 할 일을 체크해보세요!",
+                ]}
+              />
             )}
           </ul>
         </div>

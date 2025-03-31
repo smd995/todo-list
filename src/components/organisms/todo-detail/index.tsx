@@ -1,11 +1,10 @@
 "use client";
 
-import { api } from "@/effect/todo-api/todoApi";
-import { Todo, TodoRequest } from "@/types/todo-list/type";
+import { ImageUploadBox } from "@/components/molecules/image-upload-box";
+import { MemoEditor } from "@/components/molecules/memo-editor";
+import { useTodoDetail } from "@/hooks/useTodoDetail";
 import clsx from "clsx";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
 interface Props {
   className?: string;
@@ -13,61 +12,24 @@ interface Props {
 }
 
 export const TodoDetail = ({ className, id }: Props) => {
-  const router = useRouter();
+  const {
+    name,
+    memo,
+    imgUrl,
+    isCompleted,
+    isLoading,
+    error,
+    setName,
+    setMemo,
+    onImageClick,
+    onEditClick,
+    onDeleteClick,
+    onToggleCompletedClick,
+    todo,
+  } = useTodoDetail(id);
 
-  const [todo, setTodo] = useState<Todo | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [name, setName] = useState("");
-  const [memo, setMemo] = useState("");
-  const [imgUrl, setImgUrl] = useState("");
-  const [isCompleted, setIsCompleted] = useState(false);
-
-  useEffect(() => {
-    const fetchTodo = async () => {
-      try {
-        setIsLoading(true);
-        const data = await api.findOne(id);
-        setTodo(data);
-        setName(data.name);
-        setMemo(data.memo ?? "");
-        setImgUrl(data.imageUrl);
-        setIsCompleted(data.isCompleted);
-      } catch (err) {
-        setError("할 일을 불러오는 데 실패했어요.");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTodo();
-  }, [id]);
-
-  const onToggleCompletedClick = async () => {
-    if (!todo) return;
-    await api.isCompleted(todo.id, !isCompleted);
-    setIsCompleted(!isCompleted);
-  };
-
-  const onImageClick = async (file: File) => {
-    const { url } = await api.uploadImage(file);
-    setImgUrl(url);
-  };
-
-  const onEditClick = async () => {
-    if (!todo) return;
-    const request: TodoRequest = { name, memo, imageUrl: imgUrl, isCompleted };
-    console.log(request);
-    await api.updateOne(todo.id, request);
-    router.push("/");
-  };
-
-  const onDeleteClick = async () => {
-    if (!todo) return;
-    await api.deleteOne(todo.id);
-    router.push("/");
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
   };
 
   if (isLoading) return <div className="text-center py-10">불러오는 중...</div>;
@@ -107,95 +69,27 @@ export const TodoDetail = ({ className, id }: Props) => {
         <input
           type="text"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={handleChange}
           className="text-xl font-bold underline decoration-[0.5px] underline-offset-4 text-slate-900 outline-none"
         />
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 mt-4">
-        <div className="relative md:max-w-[384px] h-[312px] sm:w-full border-dashed border border-slate-300 bg-slate-50 rounded-3xl flex items-center justify-center">
-          <input
-            id="file-input"
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) onImageClick(file);
-            }}
-          />
-          <label
-            htmlFor="file-input"
-            className="relative w-full h-full cursor-pointer flex items-center justify-center"
-          >
-            {imgUrl ? (
-              <Image
-                src={imgUrl}
-                alt="uploaded"
-                fill
-                sizes="(max-width: 768px) 100vw, 33vw"
-                priority
-                className="object-cover rounded-3xl"
-              />
-            ) : (
-              <Image
-                src="/icon/image-placeholder/img.svg"
-                alt="image-placeholder"
-                width={64}
-                height={64}
-              />
-            )}
+        <ImageUploadBox imgUrl={imgUrl} onImageChange={onImageClick} />
 
-            <div
-              className={clsx(
-                "absolute bottom-4 right-4 flex items-center justify-center rounded-full w-[64px] h-[64px]",
-                imgUrl
-                  ? "border-2 border-slate-900 bg-slate-900/50"
-                  : "bg-slate-200"
-              )}
-            >
-              {imgUrl ? (
-                <Image
-                  src={"/icon/edit/edit.svg"}
-                  alt="imageActivated"
-                  width={24}
-                  height={24}
-                />
-              ) : (
-                <Image
-                  src="/icon/plus/plus-slate-500.svg"
-                  alt="createButton"
-                  width={18}
-                  height={18}
-                />
-              )}
-            </div>
-          </label>
-        </div>
-
-        <div className="relative h-[312px] sm:w-full rounded-3xl">
-          <Image
-            src="/memo/memo.svg"
-            alt="memo-image"
-            fill
-            className="object-cover"
-            priority
-          />
-          <p className="absolute top-3 left-1/2 -translate-x-1/2 z-10 font-extrabold text-amber-800">
-            Memo
-          </p>
-          <textarea
-            value={memo}
-            onChange={(e) => setMemo(e.target.value)}
-            className="absolute w-full h-60 p-6 resize-none overflow-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-[50%] z-10 font-normal text-slate-800 outline-none custom-scroll"
-          />
-        </div>
+        <MemoEditor memo={memo} onChange={setMemo} />
       </div>
 
       <div className="flex justify-center md:justify-end gap-4 mt-4">
         <button
           onClick={onEditClick}
-          className="flex items-center px-9 py-3 bg-slate-200 rounded-full border-2 border-slate-900 outline-none shadow-[3px_3px_0_0_#0f172a] gap-2"
+          disabled={!imgUrl || !memo.trim()}
+          className={clsx(
+            "flex items-center px-9 py-3 rounded-full border-2 border-slate-900 outline-none shadow-[3px_3px_0_0_#0f172a] gap-2",
+            !imgUrl || !memo.trim()
+              ? "bg-slate-200 cursor-not-allowed"
+              : "bg-lime-300"
+          )}
         >
           <Image
             src="/icon/check/check.svg"
@@ -203,7 +97,14 @@ export const TodoDetail = ({ className, id }: Props) => {
             width={16}
             height={16}
           />
-          <span className="text-slate-900 font-bold">수정하기</span>
+          <span
+            className={clsx(
+              "text-slate-900 font-bold",
+              !imgUrl || !memo.trim() ? "" : "text-slate-900"
+            )}
+          >
+            수정하기
+          </span>
         </button>
         <button
           onClick={onDeleteClick}
